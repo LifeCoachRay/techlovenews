@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tech News and Tools</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .navbar {
+      background-color: #007bff;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .form-group input {
+      flex: 2;
+      padding: 5px;
+    }
+
+    .button {
+      margin: 10px 0;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+    }
+
+    .footer {
+      background-color: #f0f0f0;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .footer a {
+      color: #000;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <a href="#tech-news">Tech News</a>
+    <a href="#love-calculator">Love Calculator</a>
+    <a href="#url-shortener">URL Shortener</a>
+    <a href="#email-validator">Email Validator</a>
+  </div>
+
+  <h1>Tech News and Tools</h1>
+  <div class="container" id="tech-news">
+    <h2>Tech News</h2>
+    <div class="result" id="techNewsResult">
+      <!-- Tech news will be displayed here -->
+    </div>
+    <button class="button" onclick="fetchTechNews()">Get Tech News</button>
+  </div>
+
+  <div class="container" id="love-calculator">
+    <h2>Love Calculator</h2>
+    <div class="form-group">
+      <label for="firstName">First Name:</label>
+      <input type="text" id="firstName" />
+    </div>
+    <div class="form-group">
+      <label for="secondName">Second Name:</label>
+      <input type="text" id="secondName" />
+    </div>
+    <button class="button" onclick="calculateLove()">Calculate Love</button>
+    <div class="result" id="loveResult">
+      <!-- Love calculation result will be displayed here -->
+    </div>
+  </div>
+
+  <div class="container" id="url-shortener">
+    <h2>URL Shortener and Email Validator</h2>
+    <div class="form-group">
+      <label for="url">URL:</label>
+      <input type="text" id="url" />
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="text" id="email" />
+    </div>
+    <button class="button" onclick="shortenUrlAndValidateEmail()">Shorten URL and Validate Email</button>
+    <div class="result" id="urlAndEmailResult">
+      <!-- Shortened URL and email validation result will be displayed here -->
+    </div>
+  </div>
+
+  <div class="footer" id="email-validator">
+    <h2>Email Validator</h2>
+    <div class="form-group">
+      <label for="emailToValidate">Email:</label>
+      <input type="text" id="emailToValidate" />
+    </div>
+    <button class="button" onclick="validateEmail()">Validate Email</button>
+    <div class="result" id="emailValidationResult">
+      <!-- Email validation result will be displayed here -->
+    </div>
+  </div>
+
+  <script>
+    // Function to fetch tech news using the /tech-news endpoint
+    async function fetchTechNews() {
+      try {
+        const response = await fetch('http://localhost:5001/tech-news');
+        const techNewsResult = document.getElementById('techNewsResult');
+        techNewsResult.innerHTML = 'Loading...';
+  
+        const techNews = await response.json();
+        let newsHtml = '';
+  
+        techNews.forEach(news => {
+          newsHtml += `<p><a href="${news.link}" target="_blank">${news.title}</a></p>`;
+        });
+  
+        techNewsResult.innerHTML = newsHtml;
+      } catch (error) {
+        const techNewsResult = document.getElementById('techNewsResult');
+        techNewsResult.innerHTML = 'Failed to fetch tech news.';
+      }
+    }
+  
+    // Function to calculate love using the /love-calculator endpoint
+    async function calculateLove() {
+      try {
+        const firstName = document.getElementById('firstName').value;
+        const secondName = document.getElementById('secondName').value;
+        const response = await fetch(`http://localhost:5001/love-calculator?firstName=${encodeURIComponent(
+          firstName
+        )}&secondName=${encodeURIComponent(secondName)}`);
+        const loveResult = document.getElementById('loveResult');
+  
+        if (!firstName || !secondName) {
+          loveResult.innerHTML = 'Please provide both first and second names.';
+          return;
+        }
+  
+        loveResult.innerHTML = 'Calculating...';
+  
+        const result = await response.json();
+  
+        loveResult.innerHTML = `Love between ${firstName} and ${secondName}: ${result.percentage}% - ${result.result}`;
+      } catch (error) {
+        const loveResult = document.getElementById('loveResult');
+        loveResult.innerHTML = 'Failed to calculate love.';
+      }
+    }
+  
+    // Function to shorten URL and validate email using the /shorten-url-and-validate-email endpoint
+    async function shortenUrlAndValidateEmail() {
+      try {
+        const url = document.getElementById('url').value;
+        const email = document.getElementById('email').value;
+        const response = await fetch(
+          `http://localhost:5001/shorten-url-and-validate-email?url=${encodeURIComponent(url)}&email=${encodeURIComponent(
+            email
+          )}`
+        );
+        const urlAndEmailResult = document.getElementById('urlAndEmailResult');
+  
+        if (!url || !email) {
+          urlAndEmailResult.innerHTML = 'Please provide both URL and email.';
+          return;
+        }
+  
+        urlAndEmailResult.innerHTML = 'Processing...';
+  
+        const result = await response.json();
+  
+        const emailValidity = result.isEmailValid ? 'valid' : 'invalid';
+        urlAndEmailResult.innerHTML = `Shortened URL: <a href="${result.shortenedUrl}" target="_blank">${result.shortenedUrl}</a><br/>Email: ${email} is ${emailValidity}.`;
+      } catch (error) {
+        const urlAndEmailResult = document.getElementById('urlAndEmailResult');
+        urlAndEmailResult.innerHTML = 'Failed to process URL or email.';
+      }
+    }
+  
+    // Function to validate email using the /email-validator endpoint
+    async function validateEmail() {
+      try {
+        const emailToValidate = document.getElementById('emailToValidate').value;
+        const response = await fetch(
+          `http://localhost:5001/email-validator?email=${encodeURIComponent(emailToValidate)}`
+        );
+        const emailValidationResult = document.getElementById('emailValidationResult');
+  
+        if (!emailToValidate) {
+          emailValidationResult.innerHTML = 'Please provide an email to validate.';
+          return;
+        }
+  
+        emailValidationResult.innerHTML = 'Validating...';
+  
+        const result = await response.json();
+  
+        const emailValidity = result.isValid ? 'valid' : 'invalid';
+        emailValidationResult.innerHTML = `Email ${emailToValidate} is ${emailValidity}.`;
+      } catch (error) {
+        const emailValidationResult = document.getElementById('emailValidationResult');
+        emailValidationResult.innerHTML = 'Failed to validate email.';
+      }
+    }
+  </script>
+  
+</body>
+</html>
